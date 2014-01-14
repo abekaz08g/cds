@@ -40,7 +40,7 @@ class candos:
         self.db = self.con[CANDODB]
         self.col = self.db[colname]
 
-    def setDescription(self, desc):
+    def editDescription(self, desc):
         """
         コレクションの説明を記述。任意。
         """
@@ -55,4 +55,23 @@ class candos:
         atsp1 = {u'$each': tags}
         atsp2 = {u'$each': keyWords}
         modif = {u'$addToSet': {u'tags': atsp1, u'keyWords': atsp2}}
-        self.col.update(selector, modif)
+        self.col.update(selector, modif, True)
+
+    def deleteCandoStatement(self, candoStatement):
+        """
+        can-do statementの削除
+        """
+        self.col.remove({u'candoStatement': candoStatement})
+
+    def getCandoStatement(self, candoStatement):
+        """
+        can-do 記述文文字列からcan-do記述文オブジェクトを取得
+        """
+        return self.col.find({u'candoStatement': candoStatement})
+
+    def getCandoStatemantsByTags(self, tags):
+        """
+        tag の集合からcan-do記述文オブジェクトの集合を取得
+        """
+        res = self.col.find({u'tags': {u'$all': tags}})
+        return [r for r in res]
